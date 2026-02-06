@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Kapil das</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: #0a0b14; height: 100vh; width: 100vw; display: flex; justify-content: center; overflow: hidden; }
+
+        /* Increased max width so the embedded video appears larger */
+        .app-shell { width: 100%; max-width: 720px; height: 100vh; background: #0a0b14; position: relative; overflow-y: auto; scrollbar-width: none; }
+        .app-shell::-webkit-scrollbar { display: none; }
+
+        /* FIXED PHOTO BACKGROUND */
+        .hero-fixed { position: fixed; top: 0; width: 100%; max-width: 720px; height: 50vh; background: url('https://i.supaimg.com/4b0f0079-3390-4c93-9ffa-e748b1595fd1.jpg') center/cover; z-index: 1; }
+        .hero-overlay { position: absolute; bottom: 0; width: 100%; height: 100%; background: linear-gradient(to top, #0a0b14 5%, transparent 80%); }
+
+        .profile-info { position: absolute; bottom: 40px; left: 20px; display: flex; align-items: center; gap: 15px; z-index: 2; }
+        .pfp { width: 85px; height: 85px; border-radius: 18px; border: 1px solid rgba(255,255,255,0.1); object-fit: cover; }
+        .name-tag p { color: #4ade80; font-weight: 700; font-size: 0.7rem; text-transform: uppercase; }
+        .name-tag h1 { color: #ffffff; font-size: 1.7rem; font-weight: 800; }
+
+        /* CONTENT LAYER */
+        .content-layer { position: relative; z-index: 10; margin-top: 45vh; padding: 20px; background: linear-gradient(to bottom, transparent, #0a0b14 10%); padding-bottom: 110px; }
+
+        .link-grid { display:flex; flex-direction:column; gap:12px; padding-bottom:30px; }
+
+        .app-btn {
+            text-decoration: none; color: #ffffff; padding: 18px 25px; border-radius: 25px;
+            background: rgba(255,255,255,0.07); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            display:flex; align-items:center; gap:15px; font-size:0.95rem; font-weight:500;
+            border:1px solid rgba(255,255,255,0.1); transition:0.3s;
+        }
+        .yt { border-left:5px solid #ff0000; box-shadow:-4px 0 12px rgba(255,0,0,0.2); }
+        .tg { border-left:5px solid #00a2ff; box-shadow:-4px 0 12px rgba(0,162,255,0.2); }
+        .ig { border-left:5px solid #e1306c; box-shadow:-4px 0 12px rgba(225,48,108,0.2); }
+        .wa { border-left:5px solid #25d366; box-shadow:-4px 0 12px rgba(37,211,102,0.2); }
+        .ph { border-left:5px solid #ff3b30; box-shadow:-4px 0 12px rgba(255,59,48,0.2); }
+        .lc { border-left:5px solid #fbbc05; box-shadow:-4px 0 12px rgba(251,188,5,0.2); }
+        .app-btn:active { transform: scale(0.96); }
+
+        /* Bottom counters */
+        .bottom-bar {
+            position: fixed; bottom: 12px; left: 50%; transform: translateX(-50%);
+            width: calc(100% - 40px); max-width: 720px; display:flex; gap:12px; z-index:50; pointer-events:none;
+        }
+        .counter-btn {
+            flex:1; pointer-events:auto; display:flex; align-items:center; justify-content:center; gap:10px;
+            padding:12px 16px; border-radius:12px; color:#fff; font-weight:600;
+            background: rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.06); backdrop-filter: blur(8px);
+        }
+
+        .welcome-msg { text-align:center; color: rgba(255,255,255,0.6); font-size:0.85rem; font-weight:500; letter-spacing:1px; text-transform:uppercase; margin-top:10px; padding-bottom:8px; }
+
+        /* GLASS 3D BOXES */
+        .glass-wrap { perspective: 900px; margin-bottom: 0; }
+        .glass-box {
+            position: relative;
+            margin: 12px 12px;
+            padding: 14px 16px;
+            border-radius: 14px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.045), rgba(255,255,255,0.02));
+            border: 1px solid rgba(255,255,255,0.09);
+            -webkit-backdrop-filter: blur(12px);
+            backdrop-filter: blur(12px);
+            box-shadow:
+                0 24px 40px rgba(2,6,23,0.55),
+                0 6px 12px rgba(2,6,23,0.45);
+            transform-style: preserve-3d;
+            transition: transform 280ms cubic-bezier(.2,.9,.2,1), box-shadow 280ms ease, filter 280ms ease;
+            overflow: visible;
+            z-index: 2;
+        }
+        .glass-box::before {
+            content: "";
+            position: absolute; left: 0; right: 0; top: 0; height: 42%;
+            border-top-left-radius: 14px; border-top-right-radius: 14px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.16), rgba(255,255,255,0.03));
+            pointer-events: none; transform: translateZ(30px); z-index: 1; mix-blend-mode: screen;
+        }
+        .glass-box::after {
+            content: "";
+            position: absolute; left: 10px; right: 10px; bottom: -16px; height: 22px; border-radius: 50%;
+            background: radial-gradient(closest-side, rgba(2,6,23,0.6), rgba(2,6,23,0));
+            filter: blur(10px); transform: translateZ(-20px); z-index: 0; pointer-events: none;
+        }
+        .glass-box > * { position: relative; z-index: 2; }
+        .glass-box.secondary {
+            background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01));
+            border: 1px solid rgba(255,255,255,0.07);
+            box-shadow: 0 18px 34px rgba(2,6,23,0.5);
+        }
+        .glass-box:hover { transform: translateY(-10px) rotateX(2deg); box-shadow: 0 34px 60px rgba(2,6,23,0.68), 0 10px 20px rgba(2,6,23,0.5); cursor: default; filter: saturate(1.03); }
+
+        .box-header { display:flex; align-items:center; gap:12px; margin-bottom:10px; }
+        .box-icon { width:52px; height:52px; border-radius:50%; overflow:hidden; flex:0 0 52px; display:flex; align-items:center; justify-content:center; border:1px solid rgba(255,255,255,0.08); background: linear-gradient(135deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01)); box-shadow: 0 6px 14px rgba(2,6,23,0.45), inset 0 1px 0 rgba(255,255,255,0.02); position: relative; z-index: 3; }
+        .box-icon i { font-size:24px; color: #fff; display:block; }
+        .box-icon.yt { background: radial-gradient(circle at 30% 30%, rgba(255,0,0,0.12), rgba(255,255,255,0.02)); }
+        .box-icon.contact { background: radial-gradient(circle at 30% 30%, rgba(37,211,102,0.08), rgba(255,255,255,0.02)); }
+        .box-title { display:flex; flex-direction:column; }
+        .box-title .title-main { color:#ffffff; font-weight:700; font-size:0.98rem; }
+        .box-title .title-sub { color: rgba(255,255,255,0.65); font-size:0.78rem; margin-top:2px; }
+
+        .glass-box p { margin: 0; line-height:1.45; color: rgba(255,255,255,0.94); z-index:3; }
+
+        .count-number { font-size:1rem; color:#fff; margin-left:6px; }
+
+        /* Responsive YouTube embed (16:9) kept, but made visually larger by increasing page max-width */
+        .video-container {
+            position: relative;
+            width: 100%;
+            /* 16:9 = 9/16 = 0.5625 -> 56.25% */
+            padding-top: 56.25%;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #000;
+
+            /* Smooth immediate scale up when the video appears (turant bada) */
+            transform-origin: center;
+            transition: transform 180ms ease;
+        }
+        .video-container.expanded {
+            transform: scale(1.06);
+        }
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+            display: block;
+        }
+
+        /* Hide the bottom title permanently (user requested: remove the below title) */
+        #video-title { display: none !important; }
+
+        .video-title { margin:12px 14px 0 14px; color:#fff; font-weight:700; font-size:1rem; }
+
+        @media (max-width:420px){
+            .pfp { width:70px; height:70px; }
+            .name-tag h1 { font-size:1.4rem; }
+            .glass-box { font-size:0.86rem; padding:10px; border-radius:12px; }
+            .box-icon { width:46px; height:46px; }
+            .box-icon i { font-size:20px; }
+            .content-layer { padding-bottom: 200px; }
+            .glass-wrap { margin-bottom: 0; }
+            /* Keep 16:9 on small devices; still allow the container to scale a bit for emphasis */
+            .video-container.expanded { transform: scale(1.03); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-shell">
+        <div class="hero-fixed">
+            <div class="hero-overlay"></div>
+            <div class="profile-info">
+                <img src="https://i.supaimg.com/9b1bbc57-1599-4878-a21a-a03e7c30b844.jpg" class="pfp" alt="Kapil Das" />
+                <div class="name-tag">
+                    <p>YT MEGA BOOST OFFICIAL</p>
+                    <h1>KAPIL DAS</h1>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-layer">
+            <div class="link-grid">
+                <!-- YouTube link increments subscribers before opening -->
+                <a id="yt-link" href="https://www.youtube.com/@kapil_h4x_live" class="app-btn yt" target="_blank" rel="noopener">
+                    <i class="fab fa-youtube" style="color:#ff0000"></i> YouTube Channel
+                </a>
+                <a href="https://t.me/+5VzFnLDfs0w2NTU1" target="_blank" class="app-btn tg" rel="noopener">
+                    <i class="fab fa-telegram" style="color:#00a2ff"></i> Join Telegram
+                </a>
+                <a href="https://www.instagram.com/kapil_das_2008" target="_blank" class="app-btn ig" rel="noopener">
+                    <i class="fab fa-instagram" style="color:#e1306c"></i> Instagram Account
+                </a>
+                <a href="https://wa.me/918134958144" target="_blank" class="app-btn wa" rel="noopener">
+                    <i class="fab fa-whatsapp" style="color:#25d366"></i> WhatsApp Contact
+                </a>
+                <a href="https://t.me/Mega_boost" target="_blank" class="app-btn tg" rel="noopener">
+                    <i class="fab fa-telegram-plane" style="color:#00a2ff"></i> Message: @Mega_boost
+                </a>
+                <a href="tel:+918134958144" class="app-btn ph">
+                    <i class="fas fa-phone-alt" style="color:#ff3b30"></i> Call: +91 81349 58144
+                </a>
+                <a href="#" target="_blank" class="app-btn lc" rel="noopener">
+                    <i class="fas fa-map-marker-alt" style="color:#fbbc05"></i> Narapati, Cachar, Assam
+                </a>
+            </div>
+
+            <!-- VIDEO SECTION: will be populated from Firebase (video/current) -->
+            <div id="video-wrapper" class="glass-wrap" aria-hidden="true" style="display:none; margin-top: 6px;">
+                <div id="video-box" class="glass-box" role="region" aria-label="Featured video">
+                    <div class="box-header">
+                        <div class="box-icon yt" aria-hidden="true">
+                            <i class="fab fa-youtube" aria-hidden="true" title="YouTube"></i>
+                        </div>
+                        <div class="box-title">
+                            <!-- KEEP THIS top title only (user requested) -->
+                            <span id="video-title-text" class="title-main">Featured Video</span>
+                            <span class="title-sub">Latest upload</span>
+                        </div>
+                    </div>
+
+                    <div id="video-section">
+                        <div class="video-container" id="video-embed">
+                            <!-- iframe inserted by JS -->
+                        </div>
+                        <!-- bottom title removed/hidden via CSS -->
+                        <div id="video-title" class="video-title" style="display:none;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="welcome-msg">Copyright® 2026-YT KAPIL H4X LIVE</div>
+
+            <!-- Two separate glass 3D boxes stacked above the bottom bar -->
+            <div class="glass-wrap" aria-hidden="false">
+
+                <!-- Subscription request box -->
+                <div class="glass-box" role="note" aria-label="Subscription request">
+                    <div class="box-header">
+                        <div class="box-icon yt" aria-hidden="true">
+                            <i class="fab fa-youtube" aria-hidden="true" title="YouTube"></i>
+                        </div>
+                        <div class="box-title">
+                            <span class="title-main">Please Subscribe</span>
+                            <span class="title-sub">Follow & join to watch every new video</span>
+                        </div>
+                    </div>
+                    <p>Please kindly subscribe to my YouTube channel, follow my Instagram account, and join my Telegram to watch every one of my videos. Thank you.</p>
+                </div>
+
+                <!-- Contact instructions box -->
+                <div class="glass-box secondary" role="note" aria-label="Contact instructions" style="margin-top:10px;">
+                    <div class="box-header">
+                        <div class="box-icon contact" aria-hidden="true">
+                            <i class="fas fa-phone" aria-hidden="true" title="Contact"></i>
+                        </div>
+                        <div class="box-title">
+                            <span class="title-main">Contact Instructions</span>
+                            <span class="title-sub">Phone & Telegram details shown above</span>
+                        </div>
+                    </div>
+                    <p>If you want to contact me, my phone number and Telegram username are given above. You can DM or call me, but please don’t call repeatedly. Call only if it’s necessary.</p>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Bottom permanent counters -->
+        <div class="bottom-bar" aria-hidden="false">
+            <button id="views-btn" class="counter-btn" title="Total Views">
+                <i class="fa fa-eye" style="color:#9ca3af"></i>
+                Views
+                <span id="views-count" class="count-number">0</span>
+            </button>
+            <button id="subs-btn" class="counter-btn" title="Subscribers (click YouTube to increase)">
+                <i class="fa fa-user-plus" style="color:#ffd166"></i>
+                Subscribers
+                <span id="subs-count" class="count-number">0</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Firebase + counters logic (ES modules, using CDN) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+        import { getDatabase, ref, runTransaction, onValue } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
+
+        // Firebase config (same as admin)
+        const firebaseConfig = {
+          apiKey: "AIzaSyCY6B4hsteNbRkNKYS6f9M1ob9030AvF4k",
+          authDomain: "mega-boost-official-website.firebaseapp.com",
+          databaseURL: "https://mega-boost-official-website-default-rtdb.firebaseio.com",
+          projectId: "mega-boost-official-website",
+          storageBucket: "mega-boost-official-website.firebasestorage.app",
+          messagingSenderId: "220450956022",
+          appId: "1:220450956022:web:c0d9cdc97ecefa1f2d02d7",
+          measurementId: "G-LN9QJ0Y938"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // counters
+        const viewsRef = ref(db, 'counters/views');
+        const subsRef = ref(db, 'counters/subscribers');
+
+        function incrementCounter(dbRef, delta = 1) {
+            return runTransaction(dbRef, current => {
+                if (current === null) return delta;
+                return current + delta;
+            });
+        }
+
+        onValue(viewsRef, snapshot => {
+            const v = snapshot.val() || 0;
+            document.getElementById('views-count').textContent = v;
+        });
+
+        onValue(subsRef, snapshot => {
+            const v = snapshot.val() || 0;
+            document.getElementById('subs-count').textContent = v;
+        });
+
+        window.addEventListener('load', async () => {
+            try { await incrementCounter(viewsRef, 1); } catch (err) { console.error('Failed to increment views:', err); }
+        });
+
+        const ytLink = document.getElementById('yt-link');
+        ytLink.addEventListener('click', async (e) => {
+            e.preventDefault();
+            ytLink.style.pointerEvents = 'none';
+            try { await incrementCounter(subsRef, 1); } catch (err) { console.error('Failed to increment subscribers:', err); }
+            finally { ytLink.style.pointerEvents = 'auto'; window.open(ytLink.href, '_blank'); }
+        });
+
+        document.getElementById('views-btn').addEventListener('click', async () => {
+            try { await incrementCounter(viewsRef, 1); } catch (e) { console.error(e); }
+        });
+        document.getElementById('subs-btn').addEventListener('click', () => { document.getElementById('yt-link').focus(); });
+
+        // --- NEW: Listen for admin-uploaded video and show on page ---
+        const videoRef = ref(db, 'video/current');
+
+        function clearVideoDisplay() {
+            const wrapper = document.getElementById('video-wrapper');
+            wrapper.style.display = 'none';
+            document.getElementById('video-embed').innerHTML = '';
+            document.getElementById('video-title').style.display = 'none';
+            document.getElementById('video-title-text').textContent = 'Featured Video';
+            // remove expanded class
+            document.getElementById('video-embed').classList.remove('expanded');
+            document.getElementById('video-box').classList.remove('expanded-box');
+        }
+
+        onValue(videoRef, snapshot => {
+            const data = snapshot.val();
+            if (!data || !data.embed) {
+                clearVideoDisplay();
+                return;
+            }
+
+            // Show wrapper
+            const wrapper = document.getElementById('video-wrapper');
+            wrapper.style.display = 'block';
+
+            // Update the small header title (top title only)
+            document.getElementById('video-title-text').textContent = data.title || 'Featured Video';
+
+            // Build a safe iframe (use embed URL saved by admin)
+            const embedUrl = data.embed;
+
+            // Insert iframe, allow modest autoplay/controls disabled by default in embed
+            const container = document.getElementById('video-embed');
+            // Use rel=0 & modestbranding to keep it cleaner (optional)
+            const separator = embedUrl.includes('?') ? '&' : '?';
+            const finalEmbed = embedUrl + separator + 'rel=0&modestbranding=1';
+
+            container.innerHTML = `<iframe src="${finalEmbed}" title="${(data.title||'Video')}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+
+            // Immediately make the player visually larger (turant bada karo)
+            // add expanded class for a quick scale-up animation
+            // this keeps the 16:9 ratio but makes it more prominent
+            requestAnimationFrame(() => {
+                container.classList.add('expanded');
+            });
+
+            // Ensure the bottom title stays hidden (user requested only top title)
+            const titleEl = document.getElementById('video-title');
+            titleEl.textContent = ''; // keep empty
+            titleEl.style.display = 'none';
+        });
+    </script>
+
+</body>
+</html>
